@@ -1,6 +1,7 @@
 body{
     display: flex;
     flex-direction: row;
+    background: bisque;
 }
 
 
@@ -23,7 +24,7 @@ body{
     list-style: none;
     margin: 0;
     padding: 0;
-    height: 200px;
+    max-height: 250px;
     width: 60000px;
 }
 
@@ -55,7 +56,7 @@ ul li{
     border-top: 20px solid transparent;
     border-bottom: 20px solid transparent;
     border-left: 20px solid black;
-    margin-top: -100px;
+    margin-top: -150px;
     margin-left: 410px;
     
 }
@@ -74,7 +75,6 @@ ul li{
 .dots {
     display: flex;
     justify-content: space-around;
-    margin-top: 50px;
     background-image: linear-gradient(rgba(137, 137, 214, 0.863), rgba(197, 168, 149, 0.945));
     border: black solid 0.5px;
     min-height: 30px;

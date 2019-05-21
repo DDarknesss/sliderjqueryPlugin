@@ -1,10 +1,21 @@
 (function($){
     
+    
+    originCss = $.fn.css;
+    
+    $.fn.css = function() {
+        var result = originCss.apply(this, arguments);
+        $(this).trigger('stylechanged');
+        return result;
+    } 
+
+
     $.fn.pluginJQ  = function (options ) {   
     
-        var settings =$.extend({
+        var settings = $.extend({
             durationOfSlide: 3000,
-            animationSpeed : 500,
+            animationSpeed : 250,
+            width: 400,
             dotsExist : true,
             arrowsExist :  true,
             autoslide : true,
@@ -14,21 +25,24 @@
         return this.each(function() {
             
             var slider = $(this);
-            var slidesQuantity = $(this)[0].children.length;
-            var video = $('li video');
-            var wrapper = slider.wrap('<div class="container"/>');
+            var slidesQuantity = $(slider).find('li').length;
+            var video = $(slider).find('video');
             var localContainer = slider.parent();
 
-            var width = 400;
+            var width = settings.width;
             var lastSliderWidth = (width*slidesQuantity) - width;
             var currentSlide = 1;
-            var localPrev = localContainer.prev();
-            var localNext = localContainer.next();
-            var interval, dots,dot;
+            var interval,dots,dot;
 
             function init(){
 
-                wrapper;
+                slider.wrap('<div class="container"/>');
+
+                localContainer.on('stylechanged', function () {
+                    if( !video.paused){
+                        video.trigger('pause');
+                    }
+                });
 
                 if ( settings.dotsExist){
                     createDots();
@@ -40,52 +54,48 @@
 
                 if ( settings.autoslide){
                     
-                    startSlide();
-
+                    startSlide();  
                     $('.arrows')
-                        .on('mouseenter', stopSlide)
+                        .on('click', stopSlide)
                         .on('mouseleave',  startSlide);
+                    
                     video
                         .on('play',stopSlide)
                         .on('ended',startSlide);
+                    
                     localContainer
                         .on('click', '.dots', stopSlide)
-                        .on('mouseleave',  '.dot', startSlide);
+                        .on('mouseleave','.dot', startSlide);
                 }
             }
             
             function createDots(){    
                 
-                dotInsertion = $("<div class='dots'/>").insertAfter(slider);
-                dots =  slider.next();
-
-                dots.each( function (){
-                    for(var i = 1; i < slidesQuantity+1; i++){
-                        $('<span/>').attr('class',"dot").attr('id','d'+i).appendTo(this);
-                    }
-                });
+                dots = $("<div class='dots'/>").insertAfter(slider);
+              
+                for(var i = 1; i < slidesQuantity+1; i++){
+                    $('<span/>').attr('class',"dot").attr('id', 'd'+i).appendTo(dots);
+                }
 
                 dot = $(dots).find('.dot');
 
-                localContainer.on('click', '.dot', function(){
+                localContainer.on('click', '.dot', function(event){
                     changeSlide(parseInt(event.target.id.split('')[1]));                
                 });
             }
 
             function addArrows(){
 
-                prevArrowInsertion =  $("<div class='arrows prev' />").insertBefore(slider);
-                nextArrowInsertion = $("<div class='arrows next'/>").insertAfter(slider);
-                localPrev = slider.prev();
-                localNext = slider.next();
+                localPrev =  $("<div class='arrows prev' />").insertBefore(slider);
+                localNext = $("<div class='arrows next'/>").insertAfter(slider);
 
-                localPrev.on('click', $.debounce(10, function(){
+                localPrev.on('click',  function(){
                     moveSlide('left');
-                }));
+                });
                 
-                localNext.on('click', $.debounce(10,function(){
+                localNext.on('click', function(){
                     moveSlide('right');
-                }));
+                });
             }
         
             function dotChanges(currentSlide,way){
@@ -112,7 +122,7 @@
             }
 
             function startSlide () {
-                clearInterval(interval);
+                stopSlide();
                 interval = setInterval(function(){
                     moveSlide('right');
                 }, settings.durationOfSlide);
@@ -129,7 +139,6 @@
             function changeSlide(number){
                 currentSlide = number;
                 updateSliderCss(-(number*width - width));
-
                 dotColorChange(number);       
             }
             
@@ -176,7 +185,7 @@ $(document).ready(function(){
     $('ul.slider').pluginJQ({
         dotsExist : true,
         arrowsExist :true,
-        autoslide : false,
+        autoslide : true,
     });
 
     $('ul.slider1').pluginJQ({
@@ -188,7 +197,7 @@ $(document).ready(function(){
     $('ul.slider2').pluginJQ({
         dotsExist : false,
         arrowsExist :true,
-        autoslide : false,
+        autoslide : true,
     });
 
     
