@@ -49,15 +49,15 @@
                 that.arrows
                     .on('click', that.stopSlide)
                     .on('click', that.stopVideo)
-                    .on('mouseleave', that.startSlide);
+                    .on('mouseleave', that.startSlide.bind(that));
                 
                 this.video
                     .on('play',that.stopSlide)
-                    .on('ended', that.startSlide);
+                    .on('ended', that.startSlide.bind(that));
                 
                 that.localContainer
                     .on('click', '.dots', that.stopSlide)
-                    .on('mouseleave','.dot', that.startSlide);
+                    .on('mouseleave','.dot', that.startSlide.bind(that));
             }
         };
 
@@ -88,7 +88,7 @@
             that.dot = $(that.dots).find('.dot');
 
             that.localContainer
-            .on('click', that.stopVideo)
+            .on('click', that.stopVideo.bind(that))
             .on('click', '.dot', function(event){
                 that.changeSlide(parseInt(event.target.attributes.getNamedItem('data-tag').value.split('')[1]));
             });
@@ -217,7 +217,7 @@ $(document).ready(function(){
         dotsExist : true,
         arrowsExist :true,
         autoslide : true,
-        durationOfSlide: 1000,
+        durationOfSlide: 2000,
         width: 1000,
     });
 
