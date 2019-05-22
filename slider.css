@@ -5,7 +5,6 @@ body{
 }
 
 
-
 .container {
     overflow: hidden;
     border-radius: 4px;
@@ -86,14 +85,13 @@ ul li{
     border-radius: 50%;
 }
 
-img{
-    width: 100%;
+img,video{
     max-height: 250px;
+    height: 100%;
+    display: block;
+    margin: auto;
 }
-video{
-    width: 100%;
-    max-height: 250px;
-}
+
 
 [data-tag="d1"]{
     background-color: #000;
