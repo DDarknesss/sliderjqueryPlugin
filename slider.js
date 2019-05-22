@@ -1,6 +1,5 @@
 (function($){
     
-    
     originCss = $.fn.css;
     
     $.fn.css = function() {
@@ -9,7 +8,7 @@
         return result;
     } 
 
-
+    
     $.fn.pluginJQ  = function (options ) {   
     
         var settings = $.extend({
@@ -17,7 +16,7 @@
             animationSpeed : 250,
             width: 400,
             dotsExist : true,
-            arrowsExist :  true,
+            arrowsExist : true,
             autoslide : true,
         }, options);
 
@@ -37,11 +36,11 @@
             function init(){
 
                 slider.wrap('<div class="container"/>');
+                slider.find('li').css('width', settings.width);
+                localContainer.css('width', settings.width);
 
                 localContainer.on('stylechanged', function () {
-                    if( !video.paused){
-                        video.trigger('pause');
-                    }
+                    stopVideo();
                 });
 
                 if ( settings.dotsExist){
@@ -54,9 +53,11 @@
 
                 if ( settings.autoslide){
                     
-                    startSlide();  
+                    startSlide(); 
+
                     $('.arrows')
                         .on('click', stopSlide)
+                        .on('click', stopVideo)
                         .on('mouseleave',  startSlide);
                     
                     video
@@ -69,21 +70,7 @@
                 }
             }
             
-            function createDots(){    
-                
-                dots = $("<div class='dots'/>").insertAfter(slider);
-              
-                for(var i = 1; i < slidesQuantity+1; i++){
-                    $('<span/>').attr('class',"dot").attr('id', 'd'+i).appendTo(dots);
-                }
-
-                dot = $(dots).find('.dot');
-
-                localContainer.on('click', '.dot', function(event){
-                    changeSlide(parseInt(event.target.id.split('')[1]));                
-                });
-            }
-
+          
             function addArrows(){
 
                 localPrev =  $("<div class='arrows prev' />").insertBefore(slider);
@@ -96,6 +83,24 @@
                 localNext.on('click', function(){
                     moveSlide('right');
                 });
+
+                localNext.css('margin-left',settings.width+10)
+
+            }
+
+            function createDots(){    
+                
+                dots = $("<div class='dots'/>").insertAfter(slider);
+              
+                for(var i = 1; i < slidesQuantity+1; i++){
+                    $('<span/>').attr('class','dot').attr('data-tag', 'd'+i).appendTo(dots);
+                }
+
+                dot = $(dots).find('.dot');
+
+                localContainer.on('click', '.dot', function(event){
+                    changeSlide(parseInt(event.target.attributes.getNamedItem('data-tag').value.split('')[1]));
+                });
             }
         
             function dotChanges(currentSlide,way){
@@ -106,12 +111,13 @@
                         currentSlide--;                      
                         dotColorChange(currentSlide);
                     }
-                    
-                } else{
+                } else if( way === 'right'){
                     dotColorChange(currentSlide);
                     if ( currentSlide > slidesQuantity ){
                         dotColorChange(1);
                     } 
+                } else{
+                    throw new Error('No such way: '+way);
                 }
             }
 
@@ -133,7 +139,9 @@
             }
 
             function updateSliderCss(value){
-                slider.animate({'margin-left' : value}, settings.animationSpeed);
+                slider
+                    .stop(true,true)
+                    .animate({'margin-left' : value}, settings.animationSpeed);
             }
 
             function changeSlide(number){
@@ -143,7 +151,7 @@
             }
             
             function moveSlide(way){
-                if ( way === 'left'){
+                 if ( way === 'left'){
                     if (currentSlide === 1){
                         updateSliderCss('-='+lastSliderWidth)
                         if( settings.dotsExist){
@@ -157,7 +165,7 @@
                         }
                         currentSlide--;
                     }
-                } else {
+                } else if(way === 'right'){
                     if ( ++currentSlide > slidesQuantity) {
                         currentSlide = 1;
                         updateSliderCss('0');
@@ -170,9 +178,18 @@
                             dotChanges(currentSlide, way);
                         }
                     }
+                }else{
+                    throw new Error('No such way: '+way);
                 }
             }
     
+            function stopVideo(){
+                if( !video.paused){                        
+                    video.trigger('pause');
+                }
+            }
+
+
             init();
             return this;
         });
@@ -186,12 +203,14 @@ $(document).ready(function(){
         dotsExist : true,
         arrowsExist :true,
         autoslide : true,
+        durationOfSlide: 1000,
     });
 
     $('ul.slider1').pluginJQ({
         dotsExist : true,
-        arrowsExist :false,
-        autoslide : true,
+        arrowsExist :true,
+        autoslide : false,
+        width: 700
     });
 
     $('ul.slider2').pluginJQ({

@@ -9,7 +9,6 @@ body{
 .container {
     overflow: hidden;
     border-radius: 4px;
-    width: 400px;
     border: 2px solid rgba(137, 137, 214, 0.863);
 }
 
@@ -33,7 +32,6 @@ ul li{
     float: left;
     margin: 0;
     padding: 0;
-    width: 400px;
 }
 
 
@@ -90,16 +88,14 @@ ul li{
 
 img{
     width: 100%;
-    max-width: 400px;
     max-height: 250px;
 }
 video{
     width: 100%;
-    max-width: 400px;
     max-height: 250px;
 }
 
-#d1{
+[data-tag="d1"]{
     background-color: #000;
 }
 
